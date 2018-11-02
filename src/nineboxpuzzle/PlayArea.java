@@ -15,16 +15,27 @@ import javax.swing.*;
  * @author Utkarsh Pankaj
  */
 public class PlayArea extends JPanel {
+    private GameEngine myGameEngine;
+    
     PlayArea() {
+        myGameEngine = new GameEngine(this);
+        initializeComponents();
+    }
+    
+    private void initializeComponents() {
         setLayout(new GridLayout(3, 3));
-        GameEngine myGameEngine = new GameEngine();
-        final Box[][] boxes = myGameEngine.getBoxes();
+        Box[][] boxes = myGameEngine.getBoxes();
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++){
                 add(boxes[i][j]);
                 boxes[i][j].addActionListener(new EventHandler(myGameEngine, i, j));
             }
+        }
         setVisible(true);
+    }
+
+    void showWinningDialog() {
+        JOptionPane.showMessageDialog(this, "You Won!");
     }
 }

@@ -19,11 +19,11 @@ public class Box extends JButton {
     private int positionX;
     private int positionY;
     
-    int getPositionX() {
+    public int getPositionX() {
         return positionX;
     }
     
-    int getPositionY() {
+    public int getPositionY() {
         return positionY;
     }
     

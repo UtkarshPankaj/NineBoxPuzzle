@@ -5,6 +5,7 @@
  */
 package nineboxpuzzle;
 
+import java.awt.Color;
 import java.util.*;
 
 /**
@@ -64,7 +65,9 @@ public class GameEngine {
             emptyBox.setText(box.getText());
             System.out.println("Clicked on : " + box.getText());
             emptyBox.setEnabled(true);
+            emptyBox.setBackground(Color.white);
             box.setEnabled(false);
+            box.setBackground(new Color(150, 150, 180));
             box.setText("");
             emptyBox = box;
             if (checkWinningStatus()) {
@@ -107,6 +110,7 @@ public class GameEngine {
                     boxes[i][j].setEnabled(false);
                     boxes[i][j].setText("");
                     emptyBox = boxes[i][j];
+                    emptyBox.setBackground(new Color(150, 150, 180));
                 }
             }
         }

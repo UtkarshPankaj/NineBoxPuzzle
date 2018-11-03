@@ -21,7 +21,8 @@ public class NineBoxPuzzle {
         // TODO code application logic here
         JFrame frame = new JFrame();
         frame.setContentPane(new PlayArea());
-        frame.setSize(300, 300);
+        frame.setSize(400, 400);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         
     }

@@ -72,24 +72,36 @@ public class GameEngine {
                 playArea.showWinningDialog();
             }
         }
+    }    
+
+    private ArrayList<Box> getValidMoves(Box boxes[][]) {
+        ArrayList<Box> validMoves = new ArrayList<Box>();
+        int emptyBoxX = emptyBox.getPositionX();
+        int emptyBoxY = emptyBox.getPositionY();
+        for (int i=-1; i<=1; i+=2) {
+            for (int j=-1; j<=1; j+=2) {
+                int x = emptyBoxX + i;
+                int y = emptyBoxY + j;
+                if(x < 3 && x >= 0 && y < 3 && y >= 0) {
+                    validMoves.add(boxes[x][y]);
+                }
+            }
+        }
+
+        return validMoves;
     }
     
     private Box[][] getRandomBoxes() {
-        Random random = new Random();
-        HashMap<Integer, Integer> integers = new HashMap<>();
+        
         ArrayList<Integer> list = new ArrayList<>();
         for (int i = 0; i <= 8; i++) {
-            int temp = random.nextInt();
-            integers.put(temp, i);
-            list.add(temp);
+            list.add(i);
         }
-        
-        Collections.sort(list);
         
         Box[][] boxes = new Box[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                int boxValue = integers.get(list.get(i+j*3));
+                int boxValue = list.get(3*i+j);
                 boxes[i][j] = new Box(i, j, boxValue);
                 if (boxValue == 0) {
                     boxes[i][j].setEnabled(false);
@@ -97,6 +109,16 @@ public class GameEngine {
                     emptyBox = boxes[i][j];
                 }
             }
+        }
+        
+        //time to randomize the boxes by making a random number of moves
+        Random random = new Random();
+        int minMovesCount = 200;
+        int movesCount = minMovesCount + random.nextInt(1000);
+        for (int i = 0; i < movesCount; i++) {
+            ArrayList<Box> validMoves = getValidMoves(boxes);
+            Box randomBox = validMoves.get(random.nextInt(validMoves.size()));
+            makeMove(randomBox.getPositionX(), randomBox.getPositionY());
         }
         return boxes;
     }

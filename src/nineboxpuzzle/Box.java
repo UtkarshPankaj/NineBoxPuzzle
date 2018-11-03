@@ -31,7 +31,8 @@ public class Box extends JButton {
         super(String.valueOf(num));
         this.positionX = positionX;
         this.positionY = positionY;
-        this.setBackground(Color.WHITE);
-        this.setFont(new Font("Tahoma", Font.BOLD, 20));
+        setBackground(Color.WHITE);
+        setFont(new Font("Tahoma", Font.BOLD, 20));
+        setFocusable(false);
     }
 }

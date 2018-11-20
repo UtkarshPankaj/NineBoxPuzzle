@@ -16,10 +16,72 @@ import javax.swing.*;
  */
 public class PlayArea extends JPanel {
     private GameEngine myGameEngine;
+    private Statistics statistics;
+    private JFrame frame;
+    private NineBoxPuzzle mainMenu;
+    private JLabel score;
     
-    PlayArea() {
-        myGameEngine = new GameEngine(this);
+    PlayArea(JFrame frame, NineBoxPuzzle mainMenu, Statistics statistics) {
+        score = new JLabel("Moves Count : 0");
+        this.mainMenu = mainMenu;
+        this.statistics = statistics;
+        this.frame = frame;
+        myGameEngine = new GameEngine(this, statistics);
         initializeComponents();
+        setVisible(true);
+        JPanel panel = this;
+        
+        JMenuBar menubar = new JMenuBar();
+        JMenu options = new JMenu("Options");
+        
+        JMenuItem newGameButton = new JMenuItem("Start New Game");
+        newGameButton.addActionListener(
+            new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    panel.setVisible(false);
+                    frame.setContentPane(new PlayArea(frame, mainMenu, statistics));
+                }
+            }
+        );
+        options.add(newGameButton);
+        
+        JMenuItem statisticsButton = new JMenuItem("Show Scores");
+        statisticsButton.addActionListener(
+            new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    panel.setVisible(false);
+                    frame.setContentPane(statistics);
+                    statistics.showList();
+                    statistics.setVisible(true);
+                }
+            }
+        );
+        options.add(statisticsButton);
+        
+        JMenuItem mainMenuButton = new JMenuItem("Back To Main Menu");
+        mainMenuButton.addActionListener(
+            new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    panel.setVisible(false);
+                    frame.setContentPane(mainMenu);
+                    mainMenu.setMenu();
+                    mainMenu.setVisible(true);
+                }
+            }
+        );
+        options.add(mainMenuButton);
+        
+        menubar.add(options);
+        menubar.add(score);
+        frame.setJMenuBar(menubar);
+        frame.validate();
+        frame.repaint();
     }
     
     private void initializeComponents() {
@@ -35,7 +97,23 @@ public class PlayArea extends JPanel {
         setVisible(true);
     }
 
-    void showWinningDialog() {
-        JOptionPane.showMessageDialog(this, "You Won!");
+    public void showWinningDialog() {
+        JTextField name = new JTextField();
+        Object[] input = {
+            "Enter your name : ", name
+        };
+        int option = JOptionPane.showConfirmDialog(this, input, "You Won! Submit Score", JOptionPane.OK_CANCEL_OPTION);
+        if(option == JOptionPane.OK_OPTION) {
+            myGameEngine.setPlayerData(name.getText().trim());
+            JOptionPane.showMessageDialog(this, "Success!\n");
+            setVisible(false);
+            frame.setContentPane(statistics);
+            statistics.setVisible(true);
+            statistics.showList();
+        }
+    }
+
+    public void setCount(int movesCount) {
+        score.setText("Moves Count : " + movesCount);
     }
 }

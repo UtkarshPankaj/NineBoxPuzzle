@@ -5,7 +5,6 @@
  */
 package nineboxpuzzle;
 
-import java.awt.Color;
 import java.util.*;
 
 /**
@@ -17,14 +16,24 @@ public class GameEngine {
     private Box[][] boxes;
     private Box emptyBox;
     private PlayArea playArea;
+    private int init;
+    private int movesCount;
+    private Statistics statistics;
 
-    GameEngine(PlayArea playArea) {
+    GameEngine(PlayArea playArea, Statistics statistics) {
         this.playArea = playArea;
+        this.statistics = statistics;
+        init = 0;
+        movesCount = 0;
         boxes = getRandomBoxes();
     }
     
     public Box[][] getBoxes(){
         return boxes;
+    }
+    
+    public int getMovesCount() {
+        return movesCount;
     }
     
     private boolean canMakeMove(int positionX, int positionY) {
@@ -65,12 +74,14 @@ public class GameEngine {
             emptyBox.setText(box.getText());
             System.out.println("Clicked on : " + box.getText());
             emptyBox.setEnabled(true);
-            emptyBox.setBackground(Color.white);
             box.setEnabled(false);
-            box.setBackground(new Color(150, 150, 180));
             box.setText("");
             emptyBox = box;
-            if (checkWinningStatus()) {
+            if(init==1) {
+                movesCount++;
+                playArea.setCount(movesCount);
+            }
+            if (checkWinningStatus() && init!=0) {
                 System.out.println("You Win");
                 playArea.showWinningDialog();
             }
@@ -81,10 +92,13 @@ public class GameEngine {
         ArrayList<Box> validMoves = new ArrayList<Box>();
         int emptyBoxX = emptyBox.getPositionX();
         int emptyBoxY = emptyBox.getPositionY();
-        for (int i=-1; i<=1; i+=2) {
-            for (int j=-1; j<=1; j+=2) {
+        
+        for (int i=-1; i<=1; i++) {
+            for (int j=-1; j<=1; j++) {
+                if(Math.abs(j)==Math.abs(i)) continue;
                 int x = emptyBoxX + i;
                 int y = emptyBoxY + j;
+                System.out.println("do "+x+y);
                 if(x < 3 && x >= 0 && y < 3 && y >= 0) {
                     validMoves.add(boxes[x][y]);
                 }
@@ -104,26 +118,40 @@ public class GameEngine {
         Box[][] boxes = new Box[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                int boxValue = list.get(3*i+j);
+                int boxValue = list.get(3*i+j) + 1;
                 boxes[i][j] = new Box(i, j, boxValue);
-                if (boxValue == 0) {
+                if (boxValue == 9) {
                     boxes[i][j].setEnabled(false);
                     boxes[i][j].setText("");
                     emptyBox = boxes[i][j];
-                    emptyBox.setBackground(new Color(150, 150, 180));
                 }
             }
         }
         
+        this.boxes = boxes;
+        makeMove(2, 1);
         //time to randomize the boxes by making a random number of moves
         Random random = new Random();
-        int minMovesCount = 200;
-        int movesCount = minMovesCount + random.nextInt(1000);
+        int minMovesCount = 100;
+        int movesCount =  minMovesCount + random.nextInt(1000);
+        
+        //IF DEBUG
+        //movesCount = 0;
+        
         for (int i = 0; i < movesCount; i++) {
             ArrayList<Box> validMoves = getValidMoves(boxes);
-            Box randomBox = validMoves.get(random.nextInt(validMoves.size()));
+            int r = random.nextInt(validMoves.size());
+            //System.out.println(""+validMoves.size());
+            Box randomBox = validMoves.get(r);
+            //System.out.println(""+randomBox.getPositionX() + randomBox.getPositionY() + randomBox.getText());
             makeMove(randomBox.getPositionX(), randomBox.getPositionY());
         }
+        init = 1;
         return boxes;
+    }
+
+    void setPlayerData(String name) {
+        PlayerData playerData = new PlayerData(name, movesCount);
+        statistics.addPlayerData(playerData);
     }
 }
